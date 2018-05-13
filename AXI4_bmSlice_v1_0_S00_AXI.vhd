@@ -103,7 +103,7 @@ port (
 end  COMPONENT;
 
     signal reloj        : std_logic;
-    signal vector_inj   : std_logic_vector(81 downto 0);
+    signal vector_inj   : std_logic_vector(811 downto 0);
 	-- AXI4LITE signals
 	signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
 	signal axi_awready	: std_logic_vector ( 0 to 0 );
