@@ -14,5 +14,8 @@ Fault injection is a well-known technique to evaluate the sensitivity of integra
 ## Architecture
 
 <p align="center">
+<figure>
     <img src="img/netfi2_eng.svg" width="500">
+  <figcaption>Fig.2 - NetFI-2 architecture.</figcaption>
+</figure>
 </p>
