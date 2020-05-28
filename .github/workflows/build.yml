@@ -19,5 +19,5 @@ jobs:
       - name: Upload PDF
         uses: actions/upload-artifact@v2
         with:
-          name: Proyecto Integrador - Ariel Viñas.pdf
+          name: Proyecto Integrador - Ariel Viñas
           path: main.pdf
