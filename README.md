@@ -7,7 +7,8 @@ Fault injection is a well-known technique to evaluate the sensitivity of integra
 
 ## Methodology
 
-![Alt text](img/netfi2_flow.svg)
+<!-- ![Alt text](img/netfi2_flow.svg) -->
+<img src="img/netfi2_flow.svg" width="200">
 
 ## Architecture
 
