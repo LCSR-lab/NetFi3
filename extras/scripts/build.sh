@@ -2,7 +2,7 @@
 
 echo "# Executing latex build..."
 
-python scripts/compile_refs.py main > /dev/null
+python extras/scripts/compile_refs.py main > /dev/null
 pdflatex -8bit main.tex > /dev/null
 mv main.tex tmp.tex
 mv main.pdf PI.pdf
