@@ -16,3 +16,11 @@ jobs:
           root_file: main.tex
           compiler: pdflatex
           args: ""
+      - name: Upload PDF
+        uses: actions/upload-artifact@v2
+        with:
+          path: main.pdf
+      - name: Download PDF
+        uses: actions/download-artifact@v2
+        with:
+          path: main.pdf
