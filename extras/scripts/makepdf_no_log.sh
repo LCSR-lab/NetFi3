@@ -15,19 +15,19 @@ rm -f ${1}.idx
 rm -f ${1}.blg
 rm -f ${1}.bbl
 
-pdflatex ${1}.tex 
+pdflatex ${1}.tex > /dev/null
 if [ -e "${1}.bcf" ]
 then
-  biber -q $1 
+  biber -q $1 > /dev/null
 fi
 
 if [ -e "${1}.nlo" ]
 then
-  makeindex -q ${1}.nlo -s nomencl.ist -o ${1}.nls 
+  makeindex -q ${1}.nlo -s nomencl.ist -o ${1}.nls > /dev/null
 fi
 
-python extras/scripts/compile_refs.py main 
-pdflatex ${1}.tex 
-pdflatex ${1}.tex 
+python extras/scripts/compile_refs.py main > /dev/null
+pdflatex ${1}.tex > /dev/null
+pdflatex ${1}.tex > /dev/null
 # cf. https://tex.stackexchange.com/questions/27878
-pdflatex -shell-escape -interaction=nonstopmode -file-line-error "${1}.tex"  | grep -i ".*:[0-9]*:.*\|warning" 
+pdflatex -shell-escape -interaction=nonstopmode -file-line-error "${1}.tex" > /dev/null | grep -i ".*:[0-9]*:.*\|warning" 
