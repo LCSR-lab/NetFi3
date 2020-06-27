@@ -1,0 +1,452 @@
+\chapter{Codigo tima\_top}\label{aped.B}
+
+\section{tima\_top.vhdl}
+    
+\begin{lstlisting}
+library ieee;
+use ieee.std_logic_1164.all;
+-----------------------------------------------------
+
+-----------------------------------------------------
+entity tima_top is
+    port(
+        --ad : in std_logic_vector(31 downto 0);
+        
+         a,d,b, clk, sel: in std_logic;
+        s: out std_logic
+   );
+end entity tima_top;
+-----------------------------------------------------
+
+-----------------------------------------------------
+architecture arch_tima_top of tima_top is
+
+--------------MUX-----------------
+Component mux is
+    port (
+        a, b, sel: in std_logic;
+        x: out std_logic
+   );
+end component;
+-------------------------------
+
+--------------FFD-----------------
+Component flipflop is
+    port (
+        d, clk: in std_logic;
+        q: out std_logic
+   );
+end component;
+-------------------------------
+
+-----------SIGNALS--------------------
+
+signal out_and: std_logic;
+signal out_ffd: std_logic;
+--------------------------------
+begin
+
+    mux1: mux
+    port map (a => out_ffd, b => out_and, sel => sel, x => s);
+    
+    flipflop1: flipflop
+    --port map (d => ad(0), clk => clk, q => out_ffd);
+    port map (d => d, clk => clk, q => out_ffd);
+    out_and <= a and b;
+    --out_and <= ad(1) and b;
+
+end architecture arch_tima_top;
+-----------------------------------------------------
+
+ \end{verbatim}
+ \subsection{FF}
+ \begin{verbatim}
+library ieee;
+use ieee.std_logic_1164.all;
+-----------------------------------------------------
+-----------------------------------------------------
+entity flipflop is
+    port(
+        d, clk: in std_logic;
+        q: out std_logic
+   );
+end entity flipflop;
+----------------------------------------------------
+-----------------------------------------------------
+Architecture arch_flipflop of flipflop is 
+
+begin
+
+    p_ff: process(clk)
+    begin
+        if(clk'event and clk = '1') then
+            q <= d;
+        end if;
+    end process p_ff;
+
+end architecture arch_flipflop;
+-----------------------------------------------------
+ \end{verbatim}
+    \subsection{MUX}
+   \begin{verbatim}
+
+------------------------------------------------
+library ieee;
+use ieee.std_logic_1164.all;
+------------------------------------------------
+
+------------------------------------------------
+entity mux is
+    port(
+        a, b, sel: in std_logic;
+        x: out std_logic
+   );
+end entity mux;
+------------------------------------------------
+
+------------------------------------------------
+Architecture arch_mux of mux is
+begin
+    x <= a WHEN sel = '0' ELSE b;
+
+end architecture arch_mux ;
+------------------------------------------------
+
+
+ \end{lstlisting}
+   
+   
+
+
+\section{ Netlist tima\_top.vm}
+  
+\begin{lstlisting}
+//
+// Written by Synplify Premier 
+// Product Version "K-2015.09-SP1"
+// Program "Synplify Premier", Mapper "maprc, Build 3057R"
+// Thu Jun 23 08:41:45 2016
+//
+// Source file index table:
+// Object locations will have the form <file>:<line>
+// file 0 "\/softslin/synplifyvK2015_09_sp1/lib/vhd2008/std.vhd "
+// file 1 "\/softslin/synplifyvK2015_09_sp1/lib/vhd/snps_haps_pkg.vhd "
+// file 2 "\/softslin/synplifyvK2015_09_sp1/lib/vhd2008/std1164.vhd "
+// file 3 "\/softslin/synplifyvK2015_09_sp1/lib/vhd2008/std_textio.vhd "
+// file 4 "\/softslin/synplifyvK2015_09_sp1/lib/vhd2008/numeric.vhd "
+// file 5 "\/softslin/synplifyvK2015_09_sp1/lib/vhd/umr_capim.vhd "
+// file 6 "\/softslin/synplifyvK2015_09_sp1/lib/vhd2008/arith.vhd "
+// file 7 "\/softslin/synplifyvK2015_09_sp1/lib/vhd2008/unsigned.vhd "
+// file 8 "\/softslin/synplifyvK2015_09_sp1/lib/vhd/hyperents.vhd "
+// file 9 "\/tima/solinasm/Downloads/TIMA/flipflop.vhd "
+// file 10 "\/tima/solinasm/Downloads/TIMA/mux.vhd "
+// file 11 "\/tima/solinasm/Downloads/TIMA/tima_top.vhd "
+
+`timescale 100 ps/100 ps
+module mux (
+  a_c,
+  b_c,
+  out_ffd,
+  sel_c,
+  s_c
+)
+;
+input a_c ;
+input b_c ;
+input out_ffd ;
+input sel_c ;
+output s_c ;
+wire a_c ;
+wire b_c ;
+wire out_ffd ;
+wire sel_c ;
+wire s_c ;
+wire GND ;
+wire VCC ;
+// @10:18
+  LUT4 x (
+	.I0(a_c),
+	.I1(b_c),
+	.I2(out_ffd),
+	.I3(sel_c),
+	.O(s_c)
+);
+defparam x.INIT=16'h88F0;
+  VCC VCC_cZ (
+	.P(VCC)
+);
+  GND GND_cZ (
+	.G(GND)
+);
+endmodule /* mux */
+
+module flipflop (
+  out_ffd,
+  d_c,
+  clk_c
+)
+;
+output out_ffd ;
+input d_c ;
+input clk_c ;
+wire out_ffd ;
+wire d_c ;
+wire clk_c ;
+wire GND ;
+wire VCC ;
+// @9:21
+  FD q_Z (
+	.Q(out_ffd),
+	.D(d_c),
+	.C(clk_c)
+);
+  VCC VCC_cZ (
+	.P(VCC)
+);
+  GND GND_cZ (
+	.G(GND)
+);
+endmodule /* flipflop */
+
+module tima_top (
+  a,
+  d,
+  b,
+  clk,
+  sel,
+  s
+)
+;
+input a ;
+input d ;
+input b ;
+input clk ;
+input sel ;
+output s ;
+wire a ;
+wire d ;
+wire b ;
+wire clk ;
+wire sel ;
+wire s ;
+wire out_ffd ;
+wire GND_x ;
+wire VCC_x ;
+wire a_c ;
+wire d_c ;
+wire b_c ;
+wire clk_c ;
+wire sel_c ;
+wire s_c ;
+wire clk_ibuf_iso ;
+wire GND ;
+wire VCC ;
+  BUFG clk_ibuf (
+	.I(clk_ibuf_iso),
+	.O(clk_c)
+);
+  IBUFG clk_ibuf_iso_cZ (
+	.O(clk_ibuf_iso),
+	.I(clk)
+);
+// @11:11
+  OBUF s_obuf (
+	.O(s),
+	.I(s_c)
+);
+// @11:10
+  IBUF sel_ibuf (
+	.O(sel_c),
+	.I(sel)
+);
+// @11:10
+  IBUF b_ibuf (
+	.O(b_c),
+	.I(b)
+);
+// @11:10
+  IBUF d_ibuf (
+	.O(d_c),
+	.I(d)
+);
+// @11:10
+  IBUF a_ibuf (
+	.O(a_c),
+	.I(a)
+);
+// @11:44
+  mux mux1 (
+	.a_c(a_c),
+	.b_c(b_c),
+	.out_ffd(out_ffd),
+	.sel_c(sel_c),
+	.s_c(s_c)
+);
+// @11:47
+  flipflop flipflop1 (
+	.out_ffd(out_ffd),
+	.d_c(d_c),
+	.clk_c(clk_c)
+);
+  assign GND = 1'b0;
+  assign VCC = 1'b1;
+endmodule /* tima_top */
+
+
+\end{lstlisting}
+
+\section{Inyecciones en tima\_top.vm}
+\begin{lstlisting} 
+
+module tima_top (
+  inj,
+  a,
+  d,
+  b,
+  clk,
+  sel,
+  s
+)
+;
+input [0 : 0] inj ;
+input a ;
+input d ;
+input b ;
+input clk ;
+input sel ;
+output s ;
+wire a ;
+wire d ;
+wire b ;
+wire clk ;
+wire sel ;
+wire s ;
+wire out_ffd ;
+wire GND_x ;
+wire VCC_x ;
+wire a_c ;
+wire d_c ;
+wire b_c ;
+wire clk_c ;
+wire sel_c ;
+wire s_c ;
+wire clk_ibuf_iso ;
+wire GND ;
+wire VCC ;
+
+  BUFG clk_ibuf (   .I(clk_ibuf_iso),
+    .O(clk_c)
+);
+  IBUFG clk_ibuf_iso_cZ (   .O(clk_ibuf_iso),
+    .I(clk)
+);
+// @11:11
+  OBUF s_obuf (   .O(s),
+    .I(s_c)
+);
+// @11:10
+  IBUF sel_ibuf (   .O(sel_c),
+    .I(sel)
+);
+// @11:10
+  IBUF b_ibuf (   .O(b_c),
+    .I(b)
+);
+// @11:10
+  IBUF d_ibuf (   .O(d_c),
+    .I(d)
+);
+// @11:10
+  IBUF a_ibuf (   .O(a_c),
+    .I(a)
+);
+// @11:44
+mux mux_uut (
+    .a_c(a_c),
+    .b_c(b_c),
+    .out_ffd(out_ffd),
+    .sel_c(sel_c),
+    .s_c(s_c)
+);
+// @11:47
+flipflop flipflop_uut (
+ .inj(inj[0 : 0]),
+    .out_ffd(out_ffd),
+    .d_c(d_c),
+    .clk_c(clk_c)
+);
+  assign GND = 1'b0;  assign VCC = 1'b1;endmodule /* tima_top */
+\end{verbatim} 
+\subsection{ FF}
+\begin{verbatim} 
+module flipflop (
+ inj,
+  out_ffd,
+  d_c,
+  clk_c
+)
+;
+
+input [0: 0] inj ;
+output out_ffd ;
+input d_c ;
+input clk_c ;
+wire out_ffd ;
+wire d_c ;
+wire clk_c ;
+wire GND ;wire VCC ;
+
+// @9:21
+  FD_mod q_Z (
+ .inj(inj[0]) ,
+    .Q(out_ffd),
+    .D(d_c),
+    .C(clk_c)
+);
+  VCC VCC_cZ ( .P(VCC)
+);
+  GND GND_cZ ( .G(GND)
+);
+endmodule /* flipflop */
+
+\end{verbatim} 
+\subsection{ MUX}
+\begin{verbatim} 
+module mux (
+ inj,
+  a_c,
+  b_c,
+  out_ffd,
+  sel_c,
+  s_c
+)
+;
+
+input inj ;
+input a_c ;
+input b_c ;
+input out_ffd ;
+input sel_c ;
+output s_c ;
+wire a_c ;
+wire b_c ;
+wire out_ffd ;
+wire sel_c ;
+wire s_c ;
+wire GND ;wire VCC ;
+
+// @10:18
+  LUT4 x ( .I0(a_c),
+    .I1(b_c),
+    .I2(out_ffd),
+    .I3(sel_c),
+    .O(s_c)
+);
+defparam x.INIT=16'h88F0;
+  VCC VCC_cZ ( .P(VCC)
+);
+  GND GND_cZ ( .G(GND)
+);
+endmodule /* mux */
+
+\end{lstlisting}

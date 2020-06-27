@@ -1,0 +1,1065 @@
+
+\chapter{Bibliotecas originales y modificadas }\label{aped.A}
+
+\section{FDC}
+\begin{lstlisting}
+
+module FDC (Q, C, CLR, D);
+
+    parameter INIT = 1'b0;
+
+    output Q;
+
+    input  C, CLR, D;
+
+    wire Q;
+    reg q_out;
+    tri0 GSR = glbl.GSR;
+
+    initial q_out = INIT;
+
+
+    always @(GSR or CLR)
+      if (GSR)
+            assign q_out = INIT;
+      else if (CLR)
+           assign q_out = 0;
+      else
+            deassign q_out;
+
+    always @(posedge C)
+	         q_out <=  D;
+
+    assign Q = q_out;
+
+    specify
+        (posedge CLR => (Q +: 1'b0)) = (0, 0);
+        if (!CLR)
+            (posedge C => (Q +: D)) = (100, 100);
+    endspecify
+endmodule
+\end{lstlisting}
+
+\section{FDC\_MOD}
+\begin{lstlisting}
+
+
+`timescale  1 ps / 1 ps
+
+module FDC_mod (inj, Q, C, CLR, D);
+
+parameter INIT = 1'b0;
+
+output Q;
+
+input C, CLR, D, inj;
+
+wire Din;
+
+FDC uut_FDC(.Q(Q),.C(C),.CLR(CLR),.D(Din));
+
+assign Din = (inj) ? !D : D;
+
+endmodule
+
+\end{lstlisting}
+
+
+\section{LUT4}
+\begin{lstlisting}
+
+
+module LUT4 (O, I0, I1, I2, I3);
+
+  parameter INIT = 16'h0000;
+
+  input I0, I1, I2, I3;
+
+  output O;
+
+  reg O;
+  reg tmp;
+
+  always @( I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3;
+
+    if (tmp == 0 || tmp == 1)
+
+        O = INIT[{I3, I2, I1, I0}];
+
+    else 
+    
+      O =  lut4_mux4 ({lut4_mux4 (INIT[15:12], {I1, I0}),
+                          lut4_mux4 (INIT[11:8], {I1, I0}),
+                          lut4_mux4 (INIT[7:4], {I1, I0}),
+                          lut4_mux4 (INIT[3:0], {I1, I0}) }, {I3, I2});
+  end
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+           
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3]) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3])) 
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+   end
+  endfunction
+
+endmodule
+
+\end{lstlisting}
+
+\section{LUT4\_MOD}
+\begin{lstlisting}
+
+module LUT4_mod (inj_c, O, I0, I1, I2, I3);
+
+  parameter INIT = 16'h0000;
+
+  input inj_c, I0, I1, I2, I3;
+
+  output O;
+
+  reg O1;
+  reg tmp;
+
+  
+    assign O = (!inj_c) ? O1 : !O1 ;
+	
+	
+  always @( I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3;
+
+    if (tmp == 0 || tmp == 1)
+
+        O1 = INIT[{I3, I2, I1, I0}];
+
+    else 
+    
+      O1 =  lut4_mux4 ({lut4_mux4 (INIT[15:12], {I1, I0}),
+                          lut4_mux4 (INIT[11:8], {I1, I0}),
+                          lut4_mux4 (INIT[7:4], {I1, I0}),
+                          lut4_mux4 (INIT[3:0], {I1, I0}) }, {I3, I2});
+  end
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+           
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3]) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3])) 
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+   end
+  endfunction
+
+endmodule
+
+
+\end{lstlisting}
+
+\section{LUT4\_L}
+\begin{lstlisting}
+module LUT4_L (LO, I0, I1, I2, I3);
+
+  parameter INIT = 16'h0000;
+
+  input inj_c, I0, I1, I2, I3;
+
+  output LO;
+
+  reg LO;
+  reg tmp;
+
+  
+ 
+  
+
+  
+  always @( I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3;
+
+    if (tmp == 0 || tmp == 1)
+
+        LO = INIT[{I3, I2, I1, I0}];
+
+    else 
+    
+      LO =  lut4_mux4 ({lut4_mux4 (INIT[15:12], {I1, I0}),
+                          lut4_mux4 (INIT[11:8], {I1, I0}),
+                          lut4_mux4 (INIT[7:4], {I1, I0}),
+                          lut4_mux4 (INIT[3:0], {I1, I0}) }, {I3, I2});
+  end
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+           
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3]) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3])) 
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+   end
+  endfunction
+
+endmodule
+
+
+\end{lstlisting}
+
+\section{LUT4\_L\_mod}
+\begin{lstlisting}
+module LUT4_L_mod (inj_c, LO, I0, I1, I2, I3);
+
+  parameter INIT = 16'h0000;
+
+  input inj_c, I0, I1, I2, I3;
+
+  output LO;
+
+  reg LO1;
+  reg tmp;
+
+  
+  assign LO = (!inj_c) ? LO1 : !LO1;
+  
+  always @( I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3;
+
+    if (tmp == 0 || tmp == 1)
+
+        LO1 = INIT[{I3, I2, I1, I0}];
+
+    else 
+    
+      LO1 =  lut4_mux4 ({lut4_mux4 (INIT[15:12], {I1, I0}),
+                          lut4_mux4 (INIT[11:8], {I1, I0}),
+                          lut4_mux4 (INIT[7:4], {I1, I0}),
+                          lut4_mux4 (INIT[3:0], {I1, I0}) }, {I3, I2});
+  end
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+           
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3]) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3])) 
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2])) 
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
+
+\section{LUT5}
+\begin{lstlisting}
+
+module LUT5 (O, I0, I1, I2, I3, I4);
+
+  parameter INIT = 32'h00000000;
+
+  input I0, I1, I2, I3, I4;
+
+  output O;
+
+  reg O;
+  reg tmp;
+
+  always @(I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4;
+
+    if (tmp == 0 || tmp == 1)
+
+        O = INIT[{I4, I3, I2, I1, I0}];
+
+    else 
+    
+      O =  lut4_mux4 (
+                        { lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, { I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+       if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+           lut6_mux8 = d[s];
+
+         else
+           if (~(|d))
+                 lut6_mux8 = 1'b0;
+           else if ((&d))
+                 lut6_mux8 = 1'b1;
+           else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+           (d[{1'b0,s[1:0]}]===d[{1'b1,s[1:0]}]))
+                 lut6_mux8 = d[{1'b0,s[1:0]}];
+           else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) && 
+           (d[{s[2],1'b0,s[0]}]===d[{s[2],1'b1,s[0]}]))
+                 lut6_mux8 = d[{s[2],1'b0,s[0]}];
+           else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+           (d[{s[2],s[1],1'b0}]===d[{s[2],s[1],1'b1}]))
+                 lut6_mux8 = d[{s[2],s[1],1'b0}];
+           else if (((s[0] ==1) || (s[0] ==0)) &&
+           (d[{1'b0,1'b0,s[0]}]===d[{1'b0,1'b1,s[0]}]) &&
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b0,s[0]}]) && 
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b1,s[0]}]))
+                 lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+           else if (((s[1] ==1) || (s[1] ==0)) &&
+           (d[{1'b0,s[1],1'b0}]===d[{1'b0,s[1],1'b1}]) &&
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b0}]) && 
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b1}]))
+                 lut6_mux8 = d[{1'b0,s[1],1'b0}];
+           else if (((s[2] ==1) || (s[2] ==0)) && 
+           (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b0,1'b1}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b0}]) && 
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b1}]))
+                 lut6_mux8 = d[{s[2],1'b0,1'b0}];
+           else
+                 lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3])  && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3]))
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
+
+\section{LUT5\_MOD}
+\begin{lstlisting}
+module LUT5_mod (inj_c,O1, I0, I1, I2, I3, I4);
+
+  parameter INIT = 32'h00000000;
+
+  input inj_c, I0, I1, I2, I3, I4;
+
+  output O;
+
+  reg O1;
+  reg tmp;
+  
+  assign O = (!inj_c) ? O1 : !O1;
+
+  always @(I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4;
+
+    if (tmp == 0 || tmp == 1)
+
+        O1 = INIT[{I4, I3, I2, I1, I0}];
+
+    else 
+    
+      O1 =  lut4_mux4 (
+                        { lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, { I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+       if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+           lut6_mux8 = d[s];
+
+         else
+           if (~(|d))
+                 lut6_mux8 = 1'b0;
+           else if ((&d))
+                 lut6_mux8 = 1'b1;
+           else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+           (d[{1'b0,s[1:0]}]===d[{1'b1,s[1:0]}]))
+                 lut6_mux8 = d[{1'b0,s[1:0]}];
+           else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) && 
+           (d[{s[2],1'b0,s[0]}]===d[{s[2],1'b1,s[0]}]))
+                 lut6_mux8 = d[{s[2],1'b0,s[0]}];
+           else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+           (d[{s[2],s[1],1'b0}]===d[{s[2],s[1],1'b1}]))
+                 lut6_mux8 = d[{s[2],s[1],1'b0}];
+           else if (((s[0] ==1) || (s[0] ==0)) && 
+           (d[{1'b0,1'b0,s[0]}]===d[{1'b0,1'b1,s[0]}]) &&
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b0,s[0]}]) && 
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b1,s[0]}]))
+                 lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+           else if (((s[1] ==1) || (s[1] ==0)) && 
+           (d[{1'b0,s[1],1'b0}]===d[{1'b0,s[1],1'b1}]) &&
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b0}]) && 
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b1}]))
+                 lut6_mux8 = d[{1'b0,s[1],1'b0}];
+           else if (((s[2] ==1) || (s[2] ==0)) &&
+           (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b0,1'b1}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b0}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b1}]))
+                 lut6_mux8 = d[{s[2],1'b0,1'b0}];
+           else
+                 lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3])  && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3]))
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
+
+\section{LUT5\_L}
+\begin{lstlisting}
+module LUT5_L (LO, I0, I1, I2, I3, I4);
+
+  parameter INIT = 32'h00000000;
+
+  input inj_c,I0, I1, I2, I3, I4;
+
+  output LO;
+
+  reg LO;
+  reg tmp;
+  
+  
+
+  always @(I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4;
+
+    if (tmp == 0 || tmp == 1)
+
+        LO1 = INIT[{I4, I3, I2, I1, I0}];
+
+    else 
+    
+      LO1 =  lut4_mux4 (
+                        { lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, { I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+       if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+           lut6_mux8 = d[s];
+
+         else
+           if (~(|d))
+                 lut6_mux8 = 1'b0;
+           else if ((&d))
+                 lut6_mux8 = 1'b1;
+           else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+           (d[{1'b0,s[1:0]}]===d[{1'b1,s[1:0]}]))
+                 lut6_mux8 = d[{1'b0,s[1:0]}];
+           else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) &&
+           (d[{s[2],1'b0,s[0]}]===d[{s[2],1'b1,s[0]}]))
+                 lut6_mux8 = d[{s[2],1'b0,s[0]}];
+           else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+           (d[{s[2],s[1],1'b0}]===d[{s[2],s[1],1'b1}]))
+                 lut6_mux8 = d[{s[2],s[1],1'b0}];
+           else if (((s[0] ==1) || (s[0] ==0)) && 
+           (d[{1'b0,1'b0,s[0]}]===d[{1'b0,1'b1,s[0]}]) &&
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b0,s[0]}]) &&
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b1,s[0]}]))
+                 lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+           else if (((s[1] ==1) || (s[1] ==0)) && 
+           (d[{1'b0,s[1],1'b0}]===d[{1'b0,s[1],1'b1}]) &&
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b0}]) && 
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b1}]))
+                 lut6_mux8 = d[{1'b0,s[1],1'b0}];
+           else if (((s[2] ==1) || (s[2] ==0)) && 
+           (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b0,1'b1}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b0}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b1}]))
+                 lut6_mux8 = d[{s[2],1'b0,1'b0}];
+           else
+                 lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3])  && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3]))
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
+
+\section{LUT5\_L\_MOD}
+\begin{lstlisting}
+module LUT5_L_mod (inj_c,LO, I0, I1, I2, I3, I4);
+
+  parameter INIT = 32'h00000000;
+
+  input inj_c,I0, I1, I2, I3, I4;
+
+  output LO;
+
+  reg LO1;
+  reg tmp;
+  
+   assign LO = (!inj_c) ? LO1 : !LO1;
+
+  always @(I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4;
+
+    if (tmp == 0 || tmp == 1)
+
+        LO1 = INIT[{I4, I3, I2, I1, I0}];
+
+    else 
+    
+      LO1 =  lut4_mux4 (
+                        { lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, { I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+       if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+           lut6_mux8 = d[s];
+
+         else
+           if (~(|d))
+                 lut6_mux8 = 1'b0;
+           else if ((&d))
+                 lut6_mux8 = 1'b1;
+           else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+           (d[{1'b0,s[1:0]}]===d[{1'b1,s[1:0]}]))
+                 lut6_mux8 = d[{1'b0,s[1:0]}];
+           else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) && 
+           (d[{s[2],1'b0,s[0]}]===d[{s[2],1'b1,s[0]}]))
+                 lut6_mux8 = d[{s[2],1'b0,s[0]}];
+           else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+           (d[{s[2],s[1],1'b0}]===d[{s[2],s[1],1'b1}]))
+                 lut6_mux8 = d[{s[2],s[1],1'b0}];
+           else if (((s[0] ==1) || (s[0] ==0)) &&
+           (d[{1'b0,1'b0,s[0]}]===d[{1'b0,1'b1,s[0]}]) &&
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b0,s[0]}]) && 
+              (d[{1'b0,1'b0,s[0]}]===d[{1'b1,1'b1,s[0]}]))
+                 lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+           else if (((s[1] ==1) || (s[1] ==0)) &&
+           (d[{1'b0,s[1],1'b0}]===d[{1'b0,s[1],1'b1}]) &&
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b0}]) &&
+              (d[{1'b0,s[1],1'b0}]===d[{1'b1,s[1],1'b1}]))
+                 lut6_mux8 = d[{1'b0,s[1],1'b0}];
+           else if (((s[2] ==1) || (s[2] ==0)) && 
+           (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b0,1'b1}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b0}]) &&
+              (d[{s[2],1'b0,1'b0}]===d[{s[2],1'b1,1'b1}]))
+                 lut6_mux8 = d[{s[2],1'b0,1'b0}];
+           else
+                 lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+
+  function lut4_mux4;
+  input [3:0] d;
+  input [1:0] s;
+   
+  begin
+
+       if ((s[1]^s[0] ==1) || (s[1]^s[0] ==0))
+
+           lut4_mux4 = d[s];
+
+         else if ((d[0] === d[1]) && (d[2] === d[3])  && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 0) && (d[0] === d[1]))
+           lut4_mux4 = d[0];
+         else if ((s[1] == 1) && (d[2] === d[3]))
+           lut4_mux4 = d[2];
+         else if ((s[0] == 0) && (d[0] === d[2]))
+           lut4_mux4 = d[0];
+         else if ((s[0] == 1) && (d[1] === d[3]))
+           lut4_mux4 = d[1];
+         else
+           lut4_mux4 = 1'bx;
+
+   end
+  endfunction
+
+endmodule
+
+\end{lstlisting}
+
+\section{LUT6}
+\begin{lstlisting}
+module LUT6 (O, I0, I1, I2, I3, I4, I5);
+
+  parameter INIT = 64'h0000000000000000;
+
+  input I0, I1, I2, I3, I4, I5;
+
+  output O;
+
+  reg O;
+  reg tmp;
+
+  always @(I5 or I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4 ^ I5;
+
+    if (tmp == 0 || tmp == 1)
+
+        O = INIT[{I5, I4, I3, I2, I1, I0}];
+
+    else 
+    
+      O =  lut6_mux8 ({lut6_mux8 (INIT[63:56], {I2, I1, I0}),
+                          lut6_mux8 (INIT[55:48], {I2, I1, I0}),
+                          lut6_mux8 (INIT[47:40], {I2, I1, I0}),
+                          lut6_mux8 (INIT[39:32], {I2, I1, I0}),
+                          lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, {I5, I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+   if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+       lut6_mux8 = d[s];
+
+     else
+       if (~(|d))
+             lut6_mux8 = 1'b0;
+       else if ((&d))
+             lut6_mux8 = 1'b1;
+       else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &
+       & (d[{1'b0,s[1:0]}]==d[{1'b1,s[1:0]}]))
+             lut6_mux8 = d[{1'b0,s[1:0]}];
+       else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) && 
+       (d[{s[2],1'b0,s[0]}]==d[{s[2],1'b1,s[0]}]))
+             lut6_mux8 = d[{s[2],1'b0,s[0]}];
+       else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+       (d[{s[2],s[1],1'b0}]==d[{s[2],s[1],1'b1}]))
+             lut6_mux8 = d[{s[2],s[1],1'b0}];
+       else if (((s[0] ==1) || (s[0] ==0)) && 
+       (d[{1'b0,1'b0,s[0]}]==d[{1'b0,1'b1,s[0]}]) &&
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b0,s[0]}]) && 
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b1,s[0]}]))
+             lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+       else if (((s[1] ==1) || (s[1] ==0)) && 
+       (d[{1'b0,s[1],1'b0}]==d[{1'b0,s[1],1'b1}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b0}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b1}]))
+             lut6_mux8 = d[{1'b0,s[1],1'b0}];
+       else if (((s[2] ==1) || (s[2] ==0)) && 
+       (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b0,1'b1}]) &&
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b0}]) && 
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b1}]))
+             lut6_mux8 = d[{s[2],1'b0,1'b0}];
+       else
+             lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
+
+\section{LUT6\_MOD}
+\begin{lstlisting}
+
+module LUT6_mod (inj_c, O, I0, I1, I2, I3, I4, I5);
+
+  parameter INIT = 64'h0000000000000000;
+
+  input inj_c,I0, I1, I2, I3, I4, I5;
+
+  output O;
+
+  reg O1;
+  reg tmp;
+
+  assign O = (!inj_c) ? O1 : !O1;
+  
+  always @(I5 or I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4 ^ I5;
+
+    if (tmp == 0 || tmp == 1)
+
+        O1 = INIT[{I5, I4, I3, I2, I1, I0}];
+
+    else 
+    
+      O1 =  lut6_mux8 ({lut6_mux8 (INIT[63:56], {I2, I1, I0}),
+                          lut6_mux8 (INIT[55:48], {I2, I1, I0}),
+                          lut6_mux8 (INIT[47:40], {I2, I1, I0}),
+                          lut6_mux8 (INIT[39:32], {I2, I1, I0}),
+                          lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, {I5, I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+   if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+       lut6_mux8 = d[s];
+
+     else
+       if (~(|d))
+             lut6_mux8 = 1'b0;
+       else if ((&d))
+             lut6_mux8 = 1'b1;
+       else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+       (d[{1'b0,s[1:0]}]==d[{1'b1,s[1:0]}]))
+             lut6_mux8 = d[{1'b0,s[1:0]}];
+       else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) && 
+       (d[{s[2],1'b0,s[0]}]==d[{s[2],1'b1,s[0]}]))
+             lut6_mux8 = d[{s[2],1'b0,s[0]}];
+       else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+       (d[{s[2],s[1],1'b0}]==d[{s[2],s[1],1'b1}]))
+             lut6_mux8 = d[{s[2],s[1],1'b0}];
+       else if (((s[0] ==1) || (s[0] ==0)) &&
+       (d[{1'b0,1'b0,s[0]}]==d[{1'b0,1'b1,s[0]}]) &&
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b0,s[0]}]) &&
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b1,s[0]}]))
+             lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+       else if (((s[1] ==1) || (s[1] ==0)) && 
+       (d[{1'b0,s[1],1'b0}]==d[{1'b0,s[1],1'b1}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b0}]) && 
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b1}]))
+             lut6_mux8 = d[{1'b0,s[1],1'b0}];
+       else if (((s[2] ==1) || (s[2] ==0)) &&
+       (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b0,1'b1}]) &&
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b0}]) && 
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b1}]))
+             lut6_mux8 = d[{s[2],1'b0,1'b0}];
+       else
+             lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
+
+\section{LUT6\_L}
+\begin{lstlisting}
+module LUT6_L (LO, I0, I1, I2, I3, I4, I5);
+
+  parameter INIT = 64'h0000000000000000;
+
+  input I0, I1, I2, I3, I4, I5;
+
+  output LO;
+
+  reg LO;
+  reg tmp;
+
+  always @(I5 or I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4 ^ I5;
+
+    if (tmp == 0 || tmp == 1)
+
+        LO = INIT[{I5, I4, I3, I2, I1, I0}];
+
+    else 
+    
+      LO =  lut6_mux8 ({lut6_mux8 (INIT[63:56], {I2, I1, I0}),
+                          lut6_mux8 (INIT[55:48], {I2, I1, I0}),
+                          lut6_mux8 (INIT[47:40], {I2, I1, I0}),
+                          lut6_mux8 (INIT[39:32], {I2, I1, I0}),
+                          lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, {I5, I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+   if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+       lut6_mux8 = d[s];
+
+     else
+       if (~(|d))
+             lut6_mux8 = 1'b0;
+       else if ((&d))
+             lut6_mux8 = 1'b1;
+       else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+       (d[{1'b0,s[1:0]}]==d[{1'b1,s[1:0]}]))
+             lut6_mux8 = d[{1'b0,s[1:0]}];
+       else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) &&
+       (d[{s[2],1'b0,s[0]}]==d[{s[2],1'b1,s[0]}]))
+             lut6_mux8 = d[{s[2],1'b0,s[0]}];
+       else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+       (d[{s[2],s[1],1'b0}]==d[{s[2],s[1],1'b1}]))
+             lut6_mux8 = d[{s[2],s[1],1'b0}];
+       else if (((s[0] ==1) || (s[0] ==0))
+       && (d[{1'b0,1'b0,s[0]}]==d[{1'b0,1'b1,s[0]}]) &&
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b0,s[0]}]) && 
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b1,s[0]}]))
+             lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+       else if (((s[1] ==1) || (s[1] ==0)) 
+       && (d[{1'b0,s[1],1'b0}]==d[{1'b0,s[1],1'b1}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b0}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b1}]))
+             lut6_mux8 = d[{1'b0,s[1],1'b0}];
+       else if (((s[2] ==1) || (s[2] ==0))
+       && (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b0,1'b1}]) &&
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b0}]) &&
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b1}]))
+             lut6_mux8 = d[{s[2],1'b0,1'b0}];
+       else
+             lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+endmodule
+
+\end{lstlisting}
+
+\section{LUT6\_L\_MOD}
+\begin{lstlisting}
+
+module LUT6_L (inj_c,LO, I0, I1, I2, I3, I4, I5);
+
+  parameter INIT = 64'h0000000000000000;
+
+  input inj_c,I0, I1, I2, I3, I4, I5;
+
+  output LO;
+
+  reg LO1;
+  reg tmp;
+  
+   assign LO = (!inj_c) ? LO1 : !LO1;
+
+  always @(I5 or I4 or I3 or  I2 or  I1 or  I0)  begin
+ 
+    tmp =  I0 ^ I1  ^ I2 ^ I3 ^ I4 ^ I5;
+
+    if (tmp == 0 || tmp == 1)
+
+        LO1 = INIT[{I5, I4, I3, I2, I1, I0}];
+
+    else 
+    
+      LO1 =  lut6_mux8 ({lut6_mux8 (INIT[63:56], {I2, I1, I0}),
+                          lut6_mux8 (INIT[55:48], {I2, I1, I0}),
+                          lut6_mux8 (INIT[47:40], {I2, I1, I0}),
+                          lut6_mux8 (INIT[39:32], {I2, I1, I0}),
+                          lut6_mux8 (INIT[31:24], {I2, I1, I0}),
+                          lut6_mux8 (INIT[23:16], {I2, I1, I0}),
+                          lut6_mux8 (INIT[15:8], {I2, I1, I0}),
+                          lut6_mux8 (INIT[7:0], {I2, I1, I0}) }, {I5, I4, I3});
+  end
+
+  function lut6_mux8;
+  input [7:0] d;
+  input [2:0] s;
+   
+  begin
+
+   if ((s[2]^s[1]^s[0] ==1) || (s[2]^s[1]^s[0] ==0))
+           
+       lut6_mux8 = d[s];
+
+     else
+       if (~(|d))
+             lut6_mux8 = 1'b0;
+       else if ((&d))
+             lut6_mux8 = 1'b1;
+       else if (((s[1]^s[0] ==1'b1) || (s[1]^s[0] ==1'b0)) &&
+       (d[{1'b0,s[1:0]}]==d[{1'b1,s[1:0]}]))
+             lut6_mux8 = d[{1'b0,s[1:0]}];
+       else if (((s[2]^s[0] ==1) || (s[2]^s[0] ==0)) &&
+       (d[{s[2],1'b0,s[0]}]==d[{s[2],1'b1,s[0]}]))
+             lut6_mux8 = d[{s[2],1'b0,s[0]}];
+       else if (((s[2]^s[1] ==1) || (s[2]^s[1] ==0)) && 
+       (d[{s[2],s[1],1'b0}]==d[{s[2],s[1],1'b1}]))
+             lut6_mux8 = d[{s[2],s[1],1'b0}];
+       else if (((s[0] ==1) || (s[0] ==0)) && 
+       (d[{1'b0,1'b0,s[0]}]==d[{1'b0,1'b1,s[0]}]) &&
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b0,s[0]}]) && 
+          (d[{1'b0,1'b0,s[0]}]==d[{1'b1,1'b1,s[0]}]))
+             lut6_mux8 = d[{1'b0,1'b0,s[0]}];
+       else if (((s[1] ==1) || (s[1] ==0)) && 
+       (d[{1'b0,s[1],1'b0}]==d[{1'b0,s[1],1'b1}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b0}]) &&
+          (d[{1'b0,s[1],1'b0}]==d[{1'b1,s[1],1'b1}]))
+             lut6_mux8 = d[{1'b0,s[1],1'b0}];
+       else if (((s[2] ==1) || (s[2] ==0)) && 
+       (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b0,1'b1}]) &&
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b0}]) && 
+          (d[{s[2],1'b0,1'b0}]==d[{s[2],1'b1,1'b1}]))
+             lut6_mux8 = d[{s[2],1'b0,1'b0}];
+       else
+             lut6_mux8 = 1'bx;
+   end
+  endfunction
+
+endmodule
+\end{lstlisting}
