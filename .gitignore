@@ -8,3 +8,4 @@ test
 PI.pdf
 *.tex.aux
 old
+texput.log
