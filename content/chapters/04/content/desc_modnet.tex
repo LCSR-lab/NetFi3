@@ -1,0 +1,11 @@
+MODNET v2 es la segunda gran iteración de este software de inyección de fallos. Uno de los cambios más grandes es la migración de C\# a Python 3. Esto no solo abre el abanico de posibilidades de nuevas implementaciones de manera más sencilla, pero además es un lenguaje de libre uso, y al ser interpretado facilita al proyecto realizar cambios y validaciones de una manera en la cual antes simplemente era imaginable.
+
+En esta migración se tomaron estrictas medidas de como se realizaría el código, como estaría estructurado y como extenderlo. Si bien su implementación actual sigue estando atada a NetLists realizadas por Synplify Premier, extenderlo es algo trivial. La lectura del código es mucho más sencilla y se encuentra documentado en su totalidad, de esta manera permitiendo a futuros trabajos en extender la herramienta y lograr así el crecimiento de un producto a su máximo potencial.
+
+La totalidad del desarrollo se encuentra alojado en GitHub de manera pública, en los repositorios del LCSR. Y puede encontrarse en \href{https://github.com/LCSR-lab/MODNET}{https://github.com/LCSR-lab/MODNET}
+
+La obtención de una NetList puede hacerse a través de un software de síntesis de FPGA. Como se mencionó, MODNET v2 actualmente soporta NetLists obtenidas desde Synplify Premier. Este paquete de soluciones es desarrollado por Synopsys Inc. una compañía estadounidense líder en el desarrollo de software especializado para el diseño de circuitos integrados complejos. La única desventaja de esto es que el software funciona bajo licencia, y desafortunadamente no ofrece una licencia de uso educativo universitario.
+
+En la UNC contamos con licencia para utilizar este software y al LCSR se le brindó el acceso remoto a un servidor con el software instalado en su versión 2017, y es con el cual se describirá el proceso de obtención de una NetList.
+
+El proceso entero será explicado a partir de un diseño de una máquina bayesiana diseñada en el laboratorio TIMA, el cual se conoce como "BM Slice". Además, la implementación fue realizada en una FPGA Nexys 4, por lo tanto la configuración específica del proyecto en cuanto al dispositivo se encuentra configurado para funcionar solo en la Nexys 4.
