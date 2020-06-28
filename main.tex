@@ -152,9 +152,12 @@ $\ $
 \chapter*{Resumen} % si no queremos que añada la palabra "capítulo"
 \addcontentsline{toc}{chapter}{Resumen} % si queremos que aparezca en el índice
 \markboth{RESUMEN}{RESUMEN} % encabezado
-La microelectrónica constituye un elemento clave en las innovaciones de la sociedad moderna. En efecto, la industria busca reducir el tamaño y consumo de los dispositivos electrónicos para mejorar su rendimiento. Sin embargo, las escalas de integración alcanzadas hacen que los circuitos integrados resulten cada vez más sensibles a los efectos de la radiación. Con el fin de evaluar la susceptibilidad de estos sistemas digitales, se han propuesto diversas metodologías y herramientas. En este trabajo retomamos una metodología previa de inyección por emulación para extenderla, actualizarla, y mejorarla bajo el nombre de NETFI-2. A lo largo del texto describimos en detalle esta nueva estrategia para luego proponer un caso de uso práctico basado en un circuito existente de una máquina bayesiana. Por un lado, este experimento nos permite obtener un primer análisis sobre la sensibilidad a los efectos de la radiación de este tipo de circuitos, y por otro, contrastar los resultados proporcionados por NETFI-2 con metodologías de simulación análogas. Luego de realizar estas pruebas demostramos que ocupando sólo una pequeña área del dispositivo destino, NETFI-2 proporciona resultados coherentes y realistas mejorando en más de un 300\% el tiempo de ejecución de la campaña de inyección de fallas respecto a la simulación. En el marco de este proyecto se ha realizado 4 publicaciones, las cuales son los frutos de esta investigación y las cuales podrán resumir de igual manera todo el trabajo realizado \cite{SanLuis} \cite{Alemania} \cite{Alemania2} \cite{Bariloche}.
+La inyección de falla es una técnica bien conocida para evaluar la sensibilidad de los circuitos integrados a los efectos de la radiación. En este trabajo, una metodología existente basada en emulación se extiende, actualiza y mejora bajo el nombre de \mbox{NETFI-3}. 
 
-Un aspecto a remarcar de este trabajo es que forma parte del primer proyecto de investigación y desarrollo que se está realizando en el LCSR (Laboratorio de Circuitos y Sistemas Robustos), recientemente creado en nuestra Facultad.
+A diferencia de las soluciones anteriores, \mbox{NETFI-3} permite una eficiencia de recursos de hardware sin precedentes, flexibilidad de campaña, estimación altamente precisa de la tasa de error y lo más importante, una completa automatización de principio a fin de la metodología.
+Esto se logra mediante un controlador de campaña incrustado dedicado a cargo de inyectar Single Event Upsets (SEU) y Single Event Transients (SETs) en bloques secuenciales y combinatorios con granularidad configurable. 
+
+La metodología entera se ve automatizada, en partigular con el uso de pipelines para continou integration de GitLab, pero es simplemente una elección de implementación, ya que puede extenderse por completo a cualquier sistema actual de pipelines \( como también de forma local \). Se presentan extensos experimentos realizados en un estudio de caso de máquina bayesiana estocástica para demostrar las características y ventajas de \mbox{NETFI-3}.
 
 %\chapter*{Introducción} % si no queremos que añada la palabra "capítulo"
 %\addcontentsline{toc}{chapter}{Introducción} % si queremos que aparezca en el índice
@@ -197,6 +200,7 @@ Un aspecto a remarcar de este trabajo es que forma parte del primer proyecto de 
 \nomenclature{FF}{Flip Flop}
 \nomenclature{RIS}{Robust Integrated Systems}
 \nomenclature{NETFI2}{Netlist Fault Injection 2}
+\nomenclature{NETFI3}{Netlist Fault Injection 3}
 \nomenclature{MODNET}{MODify NETlist}
 \nomenclature{LET}{Lineal Energy Tranfer}
 \nomenclature{NIEL}{Non Ionising Energy Loss}
