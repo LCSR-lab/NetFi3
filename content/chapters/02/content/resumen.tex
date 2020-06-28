@@ -1,0 +1,11 @@
+Los efectos de dosis total, si bien son destructivos y definitivos, dependen de la duración de la misión y de la posición del satélite en los casos que sea una misión espacial. Es decir que son acumulativos y dependen del tiempo. 
+En simples palabras el efecto de dosis total es inevitable y no corregible, ya que la única forma de evitar la dosis total es con blindaje el cual tendría consecuencias inmediatas sobre el coste de la misión ya que está íntimamente relacionado al peso del satélite, por estos motivos la dosis total  carece de interés en este proyecto.
+
+Los efectos producidos por \textit{latch-ups} si bien son destructivos también son detectables, por lo tanto son evitables. Estos pueden detectarse en tiempo real, captando el pico de tensión y pueden evitarse si se realiza  un reinicio del sistema a continuación de la detección del pico. Esta acción  volverá estable el sistema.
+Otra posibilidad es usar más \textit{silicon-on-insulator} (SOI) el cual son resistentes a los \textit{latch-ups} ~\cite{340569}.
+
+Los SEUs y SETs son instantáneos y acumulativos. Su mitigación tienen alta importancia, ya que pueden hacer perder una misión o tener consecuencias inconmensurables sobre el comportamiento deseado de los sistemas. Este proyecto integrador  toma entonces un gran interés en estos dos tipos de eventos. Y lo hace estudiándolos singularmente, es decir los efectos que se producen por un SEU o un SET en un determinado tiempo, ya que la probabilidad que sucedan los dos al mismo tiempo es casi nula.
+
+En el método a describir es posible inyectar fallas múltiples, siempre y cuando se disponga del \textit{layout} de los circuito. Dado que no se dispuso del \textit{layout} de los circuitos a someter, el proyecto integrador se enfocó en el estudio de los efectos singulares a causa  de SEU y SET. 
+
+En el próximo capítulo se presentarán distintos métodos, en los cuales se intenta emular/simular, los efectos  SEUs y SETs. Se implementan diferentes tipos de circuitos y con diferentes tipos de tecnologías, que permiten  mensurar los posibles errores a causa de los efectos mencionados.
