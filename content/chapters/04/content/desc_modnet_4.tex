@@ -1,0 +1,59 @@
+MODNET v2 cuenta con una CLI (command line interface), a diferencia de su predecesor. La herramienta se encuentra publicada en PyPI, por lo tanto su instalación es muy sencilla, simplemente corriendo:
+
+\break
+
+\begin{lstlisting}
+    pip install mod-net
+\end{lstlisting}
+
+Para su utilización, y en su estado actual, MODNET necesita como entrada
+
+\begin{itemize}
+    \item Ubicación de la NetList a procesar,
+    \item Nombre del módulo top del sistema,
+    \item Directorio de salida (por defecto utiliza \path{ubicacion_de_la_netlist/output})
+\end{itemize}
+
+Entonces se corre el comando \emph{modnet} con sus parámetros:
+
+\break
+
+\begin{lstlisting}
+    modnet --netlist ejemplo/netlist.vm --top-module top_module --outdir ./output
+\end{lstlisting}
+
+De esta manera MODNET creará un árbol de archivos con la salida correspondiente al siguiente esquema:
+
+\begin{forest}
+    for tree={
+      font=\ttfamily,
+      grow'=0,
+      child anchor=west,
+      parent anchor=south,
+      anchor=west,
+      calign=first,
+      edge path={
+        \noexpand\path [draw, \forestoption{edge}]
+        (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+      },
+      before typesetting nodes={
+        if n=1
+          {insert before={[,phantom]}}
+          {}
+      },
+      fit=band,
+      before computing xy={l=15pt},
+    }
+  [example
+    [netlist.vm]
+    [output
+        [modulo1\_con\_iny.v]
+        [modulo2\_con\_iny.v]
+        [modulo3\_con\_iny.v]
+    ]
+    [src
+        [modulo1.v]
+        [modulo2.v]
+    ]
+  ]
+  \end{forest}

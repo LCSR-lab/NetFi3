@@ -1,0 +1,37 @@
+Synplify Premier cuenta con una funcionalidad "shell" como ellos la describen, que significa básicamente que el software puede correrse de la terminal sin la necesidad de una GUI (esto nos permite automatizar el proceso de síntesis).
+
+Para obtener la NetList de un diseño RTL se necesitan 2 componentes: el primero, es un script que se ejecuta de forma remota y realiza la síntesis en si. El segundo es un script "tcl", que no es otra cosa que un lenguaje que Sinplify puede interpretar para realizar diferentes tareas. En el caso de la BM Slice, este script tiene la siguiente forma: \break
+
+
+\begin{lstlisting}
+    # Crea un proyecto nuevo en Sinplify
+    project -new proyectos/bm_slice.prj
+
+    # Guarda el proyecto
+    project -save proyectos/bm_slice.prj
+
+    # Agrega los componentes de la BM Slice 
+    add_file -vhdl ./bm.vhd
+    add_file -vhdl ./bm_slice.vhd
+    add_file -vhdl ./params.vhd
+    add_file -vhdl ./sto_add2.vhd
+    add_file -vhdl ./sto_add3.vhd
+    add_file -vhdl ./sto_mul2.vhd
+    add_file -vhdl ./sto_mul3.vhd
+
+    # Guardar netlist en formato verilog 
+    set_option -result_file proyectos/rev_1/bm_slice.vm
+
+    # Configuracion para Nexys 4
+    set_option -technology ARTIX7
+    set_option -part XC7A100T
+    set_option -package CSG324
+    set_option -grade -1
+
+    # Comienzo de la sintesis
+    project -run
+    exit    
+    
+\end{lstlisting}
+
+La salida de Synplify en \path{proyectos/rev_1/bm_slice.vm} es la NetList que necesitamos como entrada a MODNET v2

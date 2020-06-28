@@ -13,16 +13,16 @@
 \usepackage{xspace}
 \usepackage{cite}\usepackage{cancel}
 \usepackage{caption}
-\usepackage{listings}
 \usepackage{mathtools}
 \usepackage{array}
 \usepackage{listofsymbols} 
 \usepackage[spanish, es-tabla, es-lcroman]{babel}
 \usepackage{float}
-\usepackage{longtable} 
+\usepackage{longtable}
+\usepackage{forest}
 \usepackage{nomencl}
 \makenomenclature
-
+\usepackage[export]{adjustbox}
 
 \renewcommand{\nomname}{Glosario}
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
@@ -56,6 +56,30 @@
 \usepackage{listings}
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{4}
+\lstdefinestyle{BashInputStyle}{
+  language=bash,
+  firstline=2,% Supress the first line that begins with `%`
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=3pt,
+  frame=tb,
+  columns=fullflexible,
+  backgroundcolor=\color{yellow!20},
+  linewidth=0.9\linewidth,
+  xleftmargin=0.1\linewidth
+}
+
+\lstdefinestyle{BashOutputStyle}{
+  basicstyle=\small\ttfamily,
+  numbers=none,
+  frame=tblr,
+  columns=fullflexible,
+  backgroundcolor=\color{blue!10},
+  linewidth=0.9\linewidth,
+  xleftmargin=0.1\linewidth
+}
+\usepackage{inconsolata}
 \usepackage{xcolor}
 \hypersetup{
     colorlinks,
