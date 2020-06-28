@@ -4,7 +4,6 @@ La razón detrás de esta motivación radica no solo en el uso de estos sistemas
 En particular, estudios recientes han demostrado que cuanto más miniaturización, mayor es la sensibilidad a los errores inducidos por la radiación ~\cite{Ibe2010}.
 Los sistemas embebidos modernos son, por lo tanto, potencialmente susceptibles a partículas de baja energía, como los neutrones y los muones presentes en la atmósfera de la Tierra.
 
-Definición y tipos de% SEE
 El impacto de las partículas energéticas en los circuitos integrados puede causar alteraciones en el comportamiento de los componentes microelectrónicos.
 Estos errores se conocen como efectos de evento único SEE y pueden ser de diferentes tipos.
 Entre ellos, los que dan como resultado el cambio de un bit de información en un registro o memoria se denominan Single Event Upsets SEU, mientras que los pulsos transitorios que modifican la lógica combinatoria se conocen como Single Event Transients SETs.
@@ -13,7 +12,6 @@ Cuando las celdas modificadas pertenecen a una misma palabra o registro de memor
 Cuanto mayor sea la escala de integración, mayor será la probabilidad de que aparezcan MCU y MBU, lo que puede ser un desafío para las técnicas tolerantes a fallas tradicionales, como los códigos de corrección de errores.
 En este contexto, existe una creciente necesidad de estimar la sensibilidad de los circuitos integrados modernos.
 
-% De evaluación de SEE
 Para estudiar los efectos de los SEU y los SET en los circuitos digitales, generalmente se realizan pruebas bajo haces de radiación para analizar el comportamiento del dispositivo bajo un flujo de partículas grandes ~\cite{Criswell1984}.
 Sin embargo, estas campañas son muy costosas, se basan en la implementación física del Dispositivo bajo prueba DUT y requieren un considerable esfuerzo técnico y programático ~\cite{Velazco2010}.
 En consecuencia, las metodologías \emph{simulación} y \emph{emulación} son alternativas cada vez más populares para evaluar y predecir el comportamiento de estos circuitos antes de la fabricación.
@@ -22,9 +20,8 @@ Desde la perspectiva del usuario, el lenguaje de descripción de hardware HDL se
 En general, NETFI resulta particularmente atractivo ya que combina una buena capacidad de control y observabilidad del experimento con la capacidad de inyectar fallas en un solo ciclo de reloj.
 No obstante, esta metodología ha sido criticada por la complejidad y rigidez asociada con el controlador responsable de la ejecución de la inyección de falla ~\cite{Serrano2015}.
 
-% De contribución: NETFI-3
-En este trabajo, \mbox{NETFI-3} se presenta como una evolución de la metodología NETFI que aborda las debilidades mencionadas anteriormente \ nota al pie de página {Este documento es una versión completamente actualizada, extendida y con calidad de archivo del trabajo presentado en ~\cite{ netfi2} de 4 páginas donde se presentaron resultados preliminares. En este documento, se proporcionan una descripción más detallada y extendida de antecedentes, metodología, arquitectura y evaluación. Además, se incluye una nueva sección que analiza las diferentes opciones de granularidad combinacional, así como los resultados definitivos y más detallados de la campaña de emulación.}.
-A diferencia de su versión anterior, \mbox{NETFI-3} permite controlar la campaña de inyección de fallas desde el mismo FPGA donde se instancia el DUT, minimizando así la cantidad de hardware requerido.
-\mbox{NETFI-3} se basa en un controlador implementado en un procesador MicroBlaze incorporado, que permite un diseño sencillo de amplias campañas de inyección de fallas al tiempo que facilita la identificación de elementos sensibles del circuito.
-Además, para evaluar mejor el comportamiento final del DUT ya sea implementado en un FPGA o como un ASIC, la inyección SET se puede adaptar especificando el tamaño de las Tablas de búsqueda LUT del FPGA objetivo que se utilizará para la implementación de la parte combinacional del DUT.
-Para demostrar estas ventajas y validar la metodología, hemos utilizado un circuito Bayesian Machine ~\cite{Mazer2015} como caso de estudio.
+En este trabajo, \mbox{NETFI-3} se presenta como una evolución de la metodología NETFI que aborda las debilidades mencionadas anteriormente.
+
+A diferencia de su versión anterior, \mbox{NETFI-3} automatizar de principio a fin el proceso de la campaña de inyección, dejando de lado la enorme cantidad de tiempo que demandaba instanciar un DUT bajo la mejora propuesta en \mbox{NetFI-2} \ref{netfi2}.
+
+\mbox{NETFI-3} se basa en un controlador implementado en un procesador MicroBlaze incorporado, al igual que NetFI-2, pero además incorpora un nuevo núcleo de inyeciones, conocido como MODNET, ahora en su versión 2.0, que realmente permiten a la sistematización y puesta en marcha de campañas de inyección de fallos, reduciendo así la enorme curva de aprendisaje necesaria para realizar pruebas sobre dispositivos de interés a someter a posible radiación, como además reduciendo el tiempo de implementación de manera antes solo imaginada por la metodología NetFI-2.
